@@ -1,102 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Maps</title>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+      integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+      crossorigin=""
+    />
+    <link
+      href="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css"
+      rel="stylesheet"
+    />
+    <?!= include('template/style.html'); ?>
+  </head>
 
-<head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Maps</title>
-	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
-		integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
-		crossorigin="" />
-	<link href='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/leaflet.fullscreen.css'
-		rel='stylesheet' />
-	<style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+  <body>
+    <div class="map" id="mapid"></div>
 
-    .map {
-      height: 100vh;
-    }
+    <script
+      src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+      integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+      crossorigin=""
+    ></script>
 
-    .icon-hot > svg > path {
-      fill: rgb(214, 15, 15);
-    }
+    <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
 
-    .icon-default > svg > path {
-      fill: rgb(63, 77, 204);
-    }
-
-    .icon-home > svg > path {
-      fill: rgb(37, 37, 37);
-    }
-	</style>
-</head>
-
-<body>
-	<div class="map" id="mapid"></div>
-
-	<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
-		integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
-		crossorigin=""></script>
-
-	<script src='https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js'></script>
-
-	<script>
-		const coordinates = {
-			bialystok: {
-				latitude: 53.127505,
-				longitude: 23.147051,
-			},
-			home: {
-				latitude: 53.142266,
-				longitude: 23.20056,
-			}
-		};
-
-		const map = new L.map('mapid', {
-			fullscreenControl: true,
-		})
-			.setView([coordinates.home.latitude, coordinates.home.longitude], 12);
-		const OpenStreetMap_Mapnik = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-			maxZoom: 19,
-			attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-		});
-		map.addLayer(OpenStreetMap_Mapnik);
-
-		const homeIMG = '<svg xmlns="http://www.w3.org/2000/svg" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 20 19"><path d="M8,17 L8,11 L12,11 L12,17 L17,17 L17,9 L20,9 L10,0 L0,9 L3,9 L3,17 L8,17 Z" id="Shape"/></svg>';
-		const markerIMG = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" ><path clip-rule="evenodd" d="M5.05025 4.05025C7.78392 1.31658 12.2161 1.31658 14.9497 4.05025C17.6834 6.78392 17.6834 11.2161 14.9497 13.9497L10 18.8995L5.05025 13.9497C2.31658 11.2161 2.31658 6.78392 5.05025 4.05025ZM10 11C11.1046 11 12 10.1046 12 9C12 7.89543 11.1046 7 10 7C8.89543 7 8 7.89543 8 9C8 10.1046 8.89543 11 10 11Z" fill="#4A5568" fill-rule="evenodd"/></svg>';
-		const iconHot = L.divIcon({
-			html: `${markerIMG}`,
-			className: 'icon-hot',
-			iconSize: [40, 40],
-			iconAnchor: [20, 40],
-			popupAnchor: [0, -20]
-		});
-		const iconDefault = L.divIcon({
-			html: `${markerIMG}`,
-			className: 'icon-default',
-			iconSize: [40, 40],
-			iconAnchor: [20, 40],
-			popupAnchor: [0, -20]
-		});
-		const iconHome = L.divIcon({
-			html: `${homeIMG}`,
-			className: 'icon-home',
-			iconSize: [40, 40],
-			iconAnchor: [20, 20],
-			popupAnchor: [0, -10]
-		});
-
-
-		const marker = L.marker([coordinates.home.latitude, coordinates.home.longitude], { icon: iconHome }).addTo(map);
-		marker.bindPopup("Dom")
-		const marker2 = L.marker([coordinates.bialystok.latitude, coordinates.bialystok.longitude], { icon: iconDefault }).addTo(map);
-		marker2.bindPopup("Miasto")
-	</script>
-</body>
-
+    <?!= include('template/script'); ?>
+  </body>
 </html>
