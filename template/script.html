@@ -35,6 +35,22 @@
     popupAnchor: [0, -20],
     tooltipAnchor: [0, -20],
   });
+  const iconWarning = L.divIcon({
+    html: `${markerIMG}`,
+    className: "icon-warning",
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -20],
+    tooltipAnchor: [0, -20],
+  });
+  const iconWarningLight = L.divIcon({
+    html: `${markerIMG}`,
+    className: "icon-warning-light",
+    iconSize: [40, 40],
+    iconAnchor: [20, 40],
+    popupAnchor: [0, -20],
+    tooltipAnchor: [0, -20],
+  });
   const iconDefault = L.divIcon({
     html: `${markerIMG}`,
     className: "icon-default",
@@ -60,22 +76,54 @@
     .bindPopup("Dom");
 
   const onSuccess = (markersJSON) => {
-    const markers = JSON.parse(markersJSON);
+    const markersParsed = JSON.parse(markersJSON);
+    const markers = markersParsed.filter(({ lat, lng }) => lat && lng);
     markers.forEach(
-      ({ city, address, lastVisit, lastVisitDayCount, lat, lng }) => {
-        const marker = L.marker([lat, lng], { icon: iconDefault }).addTo(map);
-        const date = lastVisit
-          ? new Date(lastVisit).toLocaleDateString()
+      ({
+        client,
+        city,
+        address,
+        telephone,
+        sale,
+        lastSale,
+        lastSaleDayCount,
+        lat,
+        lng,
+      }) => {
+        let icon = null;
+        if (lastSaleDayCount > 90) {
+          icon = iconHot;
+        } else if (lastSaleDayCount > 60) {
+          icon = iconWarning;
+        } else if (lastSaleDayCount > 30) {
+          icon = iconWarningLight;
+        } else {
+          icon = iconDefault;
+        }
+
+        const marker = L.marker([lat, lng], { icon }).addTo(map);
+        const date = lastSale
+          ? new Date(lastSale).toLocaleDateString()
           : "brak danych";
-        const dateLabel = lastVisit ? `(${lastVisitDayCount} dni temu)` : "";
-        const popupTitle = `${city}${address ? "," : ""} ${address}`;
+        const dateLabel = lastSale ? `(${lastSaleDayCount} dni temu)` : "";
+        const popupTitle = `<strong>${client}</strong><br>${city}${
+          address ? "," : ""
+        } ${address}`;
         marker.bindTooltip(popupTitle, { direction: "top" }).bindPopup(
           `${popupTitle}
           <hr>
-          <strong>Ostatnia wizyta:</strong> ${date} ${dateLabel}`
+          <strong>Ostatnia wizyta:</strong> ${date} ${dateLabel}
+          <br>
+          <strong>Ostatnia sprzedaż:</strong> ${sale} t
+          <br>
+          <strong>Telefon:</strong> ${telephone}
+          `
         );
         marker.addEventListener("popupopen", (e) => {
           marker.unbindTooltip();
+        });
+        marker.addEventListener("click", (e) => {
+          alert(e.latlng);
         });
         marker.addEventListener("popupclose", (e) => {
           marker.bindTooltip(popupTitle, { direction: "top" });

@@ -63,7 +63,17 @@ const getRangeValues = () => {
 const getCoordinatesList = () => {
   const values = getRangeValues();
   const newData = values.map(
-    ([city, address, lastVisit, lastVisitDayCount, lat, lng]) => {
+    ([
+      client,
+      city,
+      address,
+      telephone,
+      sale,
+      lastSale,
+      lastSaleDayCount,
+      lat,
+      lng,
+    ]) => {
       if (city === "" && address === "") {
         return ["", ""];
       }
@@ -74,17 +84,20 @@ const getCoordinatesList = () => {
   );
 
   // do wydzielenia
-  getSheet().getRange(2, 5, values.length, 2).setValues(newData);
+  getSheet().getRange(2, 8, values.length, 2).setValues(newData);
 };
 
 const getMarkers = () => {
   const values = getRangeValues();
   const markers = values.map((row) => {
     const objKeys = [
+      "client",
       "city",
       "address",
-      "lastVisit",
-      "lastVisitDayCount",
+      "telephone",
+      "sale",
+      "lastSale",
+      "lastSaleDayCount",
       "lat",
       "lng",
     ];
@@ -96,4 +109,8 @@ const getMarkers = () => {
     return res;
   });
   return JSON.stringify(markers);
+};
+
+const findValueRange = () => {
+  const ss = getSheet();
 };
