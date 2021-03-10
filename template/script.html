@@ -58,17 +58,31 @@
   marker
     .bindTooltip("Dom", { direction: "top", interactive: true })
     .bindPopup("Dom");
-  const marker2 = L.marker(
-    [coordinates.bialystok.latitude, coordinates.bialystok.longitude],
-    { icon: iconDefault }
-  ).addTo(map);
-  marker2.bindTooltip("Miasto").bindPopup("Miasto");
-  marker.addEventListener("popupopen", (e) => {
-    console.log(e);
-    marker.unbindTooltip();
-  });
-  marker.addEventListener("popupclose", (e) => {
-    console.log(e);
-    marker.bindTooltip("Dom", { direction: "top", interactive: true });
-  });
+
+  const onSuccess = (markersJSON) => {
+    const markers = JSON.parse(markersJSON);
+    markers.forEach(
+      ({ city, address, lastVisit, lastVisitDayCount, lat, lng }) => {
+        const marker = L.marker([lat, lng], { icon: iconDefault }).addTo(map);
+        const date = lastVisit
+          ? new Date(lastVisit).toLocaleDateString()
+          : "brak danych";
+        const dateLabel = lastVisit ? `(${lastVisitDayCount} dni temu)` : "";
+        const popupTitle = `${city}${address ? "," : ""} ${address}`;
+        marker.bindTooltip(popupTitle, { direction: "top" }).bindPopup(
+          `${popupTitle}
+          <hr>
+          <strong>Ostatnia wizyta:</strong> ${date} ${dateLabel}`
+        );
+        marker.addEventListener("popupopen", (e) => {
+          marker.unbindTooltip();
+        });
+        marker.addEventListener("popupclose", (e) => {
+          marker.bindTooltip(popupTitle, { direction: "top" });
+        });
+      }
+    );
+  };
+
+  google.script.run.withSuccessHandler(onSuccess).getMarkers();
 </script>
