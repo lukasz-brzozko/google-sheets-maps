@@ -1,7 +1,7 @@
 const onOpen = () => {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu("Mapa")
-    .addItem("Pobierz współrzędne geograficzne", "getRangeValues")
+    .addItem("Pobierz współrzędne geograficzne", "getCoordinatesList")
     .addSeparator()
     .addItem("Mapa w ramce", "openModal")
     .addItem("Mapa z prawej", "openShowbar")
@@ -57,8 +57,13 @@ const getSheet = () => {
 const getRangeValues = () => {
   const ss = getSheet();
   const [headers, ...values] = ss.getDataRange().getValues();
+  return values;
+};
+
+const getCoordinatesList = () => {
+  const values = getRangeValues();
   const newData = values.map(
-    ([city, address, distance, lastVisit, lastVisitDayCount, lat, lng]) => {
+    ([city, address, lastVisit, lastVisitDayCount, lat, lng]) => {
       if (city === "" && address === "") {
         return ["", ""];
       }
@@ -68,5 +73,27 @@ const getRangeValues = () => {
     }
   );
 
-  ss.getRange(2, 6, values.length, 2).setValues(newData);
+  // do wydzielenia
+  getSheet().getRange(2, 5, values.length, 2).setValues(newData);
+};
+
+const getMarkers = () => {
+  const values = getRangeValues();
+  const markers = values.map((row) => {
+    const objKeys = [
+      "city",
+      "address",
+      "lastVisit",
+      "lastVisitDayCount",
+      "lat",
+      "lng",
+    ];
+    const res = row.reduce(
+      (acc, curr, index) => ((acc[objKeys[index]] = curr), acc),
+      {}
+    );
+
+    return res;
+  });
+  return JSON.stringify(markers);
 };
