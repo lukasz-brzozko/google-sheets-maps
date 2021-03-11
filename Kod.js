@@ -118,14 +118,22 @@ const getMarkers = () => {
   return JSON.stringify(markers);
 };
 
+const roundValue = (number, precision) => {
+  const round = (
+    Math.round(number * Math.pow(10, precision)) / Math.pow(10, precision)
+  ).toFixed(precision);
+  return round;
+};
+
 const findValueRange = (value) => {
   const { lat, lng } = JSON.parse(value);
   const ss = getSheet();
-  const latFixed = lat.toFixed(6);
-  const lngFixed = lng.toFixed(6);
+  const latFixed = roundValue(lat, 6);
+  const lngFixed = roundValue(lng, 6);
   const latString = String(latFixed).replace(".", ",");
   const lngString = String(lngFixed).replace(".", ",");
   const mergedCoordinates = `${latString}${lngString}`;
+  // ss.getRange("A29").setValue(mergedCoordinates);
   const foundRange = ss
     .getDataRange()
     .createTextFinder(mergedCoordinates)
