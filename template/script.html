@@ -103,28 +103,38 @@
           ? new Date(lastSale).toLocaleDateString()
           : noDataMessage;
         const dateLabel = lastSale ? `(${lastSaleDayCount} dni temu)` : "";
-        const popupTitle = `<strong>${client}</strong><br>${city}${
-          address ? "," : ""
-        } ${address}`;
-        marker.bindTooltip(popupTitle, { direction: "top" }).bindPopup(
-          `${popupTitle}
+        const popupTitle = `<strong>${client}</strong><br>${city}${address ? "," : ""
+          } ${address}`;
+
+        const popup = L.popup().setContent(`${popupTitle}
           <hr>
           <strong>Data ostatniej sprzedaży:</strong> ${date} ${dateLabel}
           <br>
-          <strong>Wielkość sprzedaży:</strong> ${
-            sale ? sale + "t" : noDataMessage
+          <strong>Wielkość sprzedaży:</strong> ${sale ? sale + "t" : noDataMessage
           } 
-          <br>
+        <br>
         <strong>Telefon:</strong> ${telephone ? telephone : noDataMessage}
         <button class="button button-popup">Pokaż rekord</button>
-          `
-        );
-        marker.addEventListener("popupopen", (e) => {
+        `);
+
+        marker
+          .bindTooltip(popupTitle, { direction: "top" })
+          .bindPopup(popup)
+          .bindPopup(popup);
+
+        marker.addEventListener("popupopen", function (e) {
           marker.unbindTooltip();
+          const popup = this._popup;
+          const wrapperEl = popup._wrapper;
+          const buttonEl = wrapperEl.querySelector(".button.button-popup");
+          buttonEl?.addEventListener("click", () => {
+            const coordinates = popup._latlng
+            const coordinatesJSON = JSON.stringify(coordinates)
+            console.log(coordinatesJSON)
+            google.script.run.findValueRange(coordinatesJSON);
+          });
         });
-        // marker.addEventListener("click", (e) => {
-        //   alert(e.latlng);
-        // });
+
         marker.addEventListener("popupclose", (e) => {
           marker.bindTooltip(popupTitle, { direction: "top" });
         });

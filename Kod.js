@@ -5,6 +5,13 @@ const onOpen = () => {
     .addSeparator()
     .addItem("Mapa w ramce", "openModal")
     .addItem("Mapa z prawej", "openShowbar")
+    .addSeparator()
+    .addSubMenu(
+      ui
+        .createMenu("Ustawienia")
+        .addItem("Wymiary okna mapy", "dupa")
+        .addItem("Wartości dla kolorów znaczników", "dupa")
+    )
     .addToUi();
 };
 
@@ -111,6 +118,21 @@ const getMarkers = () => {
   return JSON.stringify(markers);
 };
 
-const findValueRange = () => {
+const findValueRange = (value) => {
+  const { lat, lng } = JSON.parse(value);
   const ss = getSheet();
+  const latFixed = lat.toFixed(6)
+  const lngFixed = lng.toFixed(6)
+  const latString = String(latFixed).replace(".", ",");
+  const lngString = String(lngFixed).replace(".", ",");
+  const mergedCoordinates = `${latString}${lngString}`
+  const foundRange = ss
+    .getDataRange()
+    .createTextFinder(mergedCoordinates)
+    .findNext();
+  if (foundRange) {
+    const row = foundRange.getRow();
+    const rangeToSelect = ss.getRange(`${row}:${row}`)
+    ss.setActiveSelection(rangeToSelect)
+  }
 };
