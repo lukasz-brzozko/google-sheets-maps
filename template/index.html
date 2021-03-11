@@ -19,8 +19,10 @@
   </head>
 
   <body>
+    <div class="loader">
+      <div class="spinner"></div>
+    </div>
     <div class="map" id="mapid"></div>
-
     <script
       src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
       integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
@@ -29,6 +31,7 @@
 
     <script src="https://api.mapbox.com/mapbox.js/plugins/leaflet-fullscreen/v1.0.1/Leaflet.fullscreen.min.js"></script>
 
+    <?!= include('template/env.html'); ?>
     <?!= include('template/script'); ?>
   </body>
 </html>

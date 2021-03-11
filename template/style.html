@@ -5,6 +5,75 @@
     padding: 0;
   }
 
+  .error {
+    color: #c62828;
+  }
+
+  button {
+    display: block;
+    padding: 0.6em 1.1em;
+    margin: 20px auto 0;
+    border: none;
+    background-color: #ffca28;
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+  }
+
+  button:hover {
+    background-color: #ffc107;
+  }
+
+  .loader {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 9999;
+  }
+
+  .loader::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #000;
+    opacity: 0.5;
+  }
+
+  .loader-hidden {
+    display: none;
+  }
+
+  .spinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    height: 100px;
+    width: 100px;
+    border: 5px solid white;
+    /* border-top: 2px solid transparent; */
+    border-top-color: transparent;
+    border-radius: 50%;
+    opacity: 0.9;
+    animation: rotate 1.3s linear infinite;
+  }
+
+  @keyframes rotate {
+    from {
+      transform: translate(-50%, -50%) rotate(0deg);
+    }
+
+    to {
+      transform: translate(-50%, -50%) rotate(360deg);
+    }
+  }
+
   .map {
     height: 100vh;
   }
@@ -14,12 +83,16 @@
     stroke-width: 1px;
   }
 
+  .icon-default > svg > path {
+    fill: #009624;
+  }
+
   .icon-hot > svg > path {
     fill: #c62828;
   }
 
-  .icon-default > svg > path {
-    fill: #009624;
+  .icon-no-data > svg > path {
+    fill: #42424277;
   }
 
   .icon-warning > svg > path {
@@ -31,6 +104,7 @@
   }
 
   .icon-home > svg > path {
-    fill: #424242;
+    fill: #0277bd;
+    stroke: #00000017;
   }
 </style>
