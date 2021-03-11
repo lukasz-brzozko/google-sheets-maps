@@ -121,18 +121,18 @@ const getMarkers = () => {
 const findValueRange = (value) => {
   const { lat, lng } = JSON.parse(value);
   const ss = getSheet();
-  const latFixed = lat.toFixed(6)
-  const lngFixed = lng.toFixed(6)
+  const latFixed = lat.toFixed(6);
+  const lngFixed = lng.toFixed(6);
   const latString = String(latFixed).replace(".", ",");
   const lngString = String(lngFixed).replace(".", ",");
-  const mergedCoordinates = `${latString}${lngString}`
+  const mergedCoordinates = `${latString}${lngString}`;
   const foundRange = ss
     .getDataRange()
     .createTextFinder(mergedCoordinates)
     .findNext();
   if (foundRange) {
     const row = foundRange.getRow();
-    const rangeToSelect = ss.getRange(`${row}:${row}`)
-    ss.setActiveSelection(rangeToSelect)
+    const rangeToSelect = ss.getRange(`${row}:${row}`);
+    ss.setActiveSelection(rangeToSelect);
   }
 };
