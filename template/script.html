@@ -103,18 +103,27 @@
           ? new Date(lastSale).toLocaleDateString()
           : noDataMessage;
         const dateLabel = lastSale ? `(${lastSaleDayCount} dni temu)` : "";
-        const popupTitle = `<strong>${client}</strong><br>${city}${address ? "," : ""
-          } ${address}`;
+        const popupTitle = `<span class="info"><strong>${client}</strong><br>${city}${
+          address ? "," : ""
+        } ${address}</span>`;
 
         const popup = L.popup().setContent(`${popupTitle}
           <hr>
-          <strong>Data ostatniej sprzedaży:</strong> ${date} ${dateLabel}
+          <span class="info info-date"><strong>Data ostatniej sprzedaży:</strong> ${date} ${dateLabel}</span>
           <br>
-          <strong>Wielkość sprzedaży:</strong> ${sale ? sale + "t" : noDataMessage
-          } 
+          <span class="info"><strong>Wielkość sprzedaży:</strong> ${
+            sale ? sale + "t" : noDataMessage
+          }</span>
         <br>
-        <strong>Telefon:</strong> ${telephone ? telephone : noDataMessage}
-        <button class="button button-popup">Pokaż rekord</button>
+        <span class="info"><strong>Telefon:</strong> ${
+          telephone ? telephone : noDataMessage
+        }</span>
+        <br>
+        <div class="container container-button">
+          <button class="button button-popup">Znajdź rekord</button>
+          <div class="loader"></div>
+          <span class="info info-hidden">Rekord znajduje się w wierszu nr </span>
+        </div>
         `);
 
         marker
@@ -128,9 +137,9 @@
           const wrapperEl = popup._wrapper;
           const buttonEl = wrapperEl.querySelector(".button.button-popup");
           buttonEl?.addEventListener("click", () => {
-            const coordinates = popup._latlng
-            const coordinatesJSON = JSON.stringify(coordinates)
-            console.log(coordinatesJSON)
+            const coordinates = popup._latlng;
+            const coordinatesJSON = JSON.stringify(coordinates);
+            console.log(coordinatesJSON);
             google.script.run.findValueRange(coordinatesJSON);
           });
         });
@@ -140,7 +149,9 @@
         });
       }
     );
-    document.querySelector(".loader")?.classList.add("loader-hidden");
+    document
+      .querySelector(".loader-modal")
+      ?.classList.add("loader-modal-hidden");
   };
 
   google.script.run.withSuccessHandler(onSuccess).getMarkers();

@@ -9,6 +9,13 @@
     color: #c62828;
   }
 
+  .container-button {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
   button {
     display: block;
     padding: 0.6em 1.1em;
@@ -25,7 +32,17 @@
     background-color: #ffc107;
   }
 
-  .loader {
+  .info {
+    display: inline-block;
+    margin-top: 3px;
+  }
+
+  .info-date {
+    max-width: 225px;
+    word-wrap: break-word;
+  }
+
+  .loader-modal {
     position: fixed;
     top: 0;
     right: 0;
@@ -34,7 +51,7 @@
     z-index: 9999;
   }
 
-  .loader::before {
+  .loader-modal::before {
     content: "";
     position: absolute;
     top: 0;
@@ -45,7 +62,8 @@
     opacity: 0.5;
   }
 
-  .loader-hidden {
+  .info-hidden,
+  .loader-modal-hidden {
     display: none;
   }
 
@@ -57,7 +75,6 @@
     height: 100px;
     width: 100px;
     border: 5px solid white;
-    /* border-top: 2px solid transparent; */
     border-top-color: transparent;
     border-radius: 50%;
     opacity: 0.9;
