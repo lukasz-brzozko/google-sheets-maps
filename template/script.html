@@ -70,6 +70,11 @@
   ).addTo(map);
   marker.bindTooltip("Dom", { direction: "top" });
 
+  const handleSuccessButton = (row, { elementsToToggle, elementsToInsertData }) => {
+    elementsToInsertData.forEach((element) => element.textContent = row);
+    elementsToToggle.forEach((element) => element.classList.toggle("hidden"));
+  };
+
   const onSuccess = (markersJSON) => {
     const markersParsed = JSON.parse(markersJSON);
     const markers = markersParsed.filter(({ lat, lng }) => lat && lng);
@@ -103,26 +108,24 @@
           ? new Date(lastSale).toLocaleDateString()
           : noDataMessage;
         const dateLabel = lastSale ? `(${lastSaleDayCount} dni temu)` : "";
-        const popupTitle = `<span class="info"><strong>${client}</strong><br>${city}${
-          address ? "," : ""
-        } ${address}</span>`;
+        const popupTitle = `<span class="info"><strong>${client}</strong><br>${city}${address ? "," : ""
+          } ${address}</span>`;
 
         const popup = L.popup().setContent(`${popupTitle}
           <hr>
           <span class="info info-date"><strong>Data ostatniej sprzedaży:</strong> ${date} ${dateLabel}</span>
           <br>
-          <span class="info"><strong>Wielkość sprzedaży:</strong> ${
-            sale ? sale + "t" : noDataMessage
+          <span class="info"><strong>Wielkość sprzedaży:</strong> ${sale ? sale + "t" : noDataMessage
           }</span>
         <br>
-        <span class="info"><strong>Telefon:</strong> ${
-          telephone ? telephone : noDataMessage
-        }</span>
+        <span class="info"><strong>Telefon:</strong> ${telephone ? telephone : noDataMessage
+          }</span>
         <br>
         <div class="container container-button">
           <button class="button button-popup">Znajdź rekord</button>
-          <div class="loader"></div>
-          <span class="info info-hidden">Rekord znajduje się w wierszu nr </span>
+          <div class="spinner spinner-popup hidden"></div>
+          <span class="info info-result hidden">Rekord znajduje się w wierszu nr:</span>
+          <strong class="info info-record-number">
         </div>
         `);
 
@@ -136,11 +139,23 @@
           const popup = this._popup;
           const wrapperEl = popup._wrapper;
           const buttonEl = wrapperEl.querySelector(".button.button-popup");
-          buttonEl?.addEventListener("click", () => {
+          const spinnerEl = wrapperEl.querySelector(".spinner-popup");
+          const resultEl = wrapperEl.querySelector(".info-result");
+          const recordNumberEl = wrapperEl.querySelector(".info-record-number");
+          buttonEl?.addEventListener("click", (e) => {
             const coordinates = popup._latlng;
             const coordinatesJSON = JSON.stringify(coordinates);
+            const payload = {
+              elementsToToggle: [spinnerEl, resultEl],
+              elementsToInsertData: [recordNumberEl],
+            };
             console.log(coordinatesJSON);
-            google.script.run.findValueRange(coordinatesJSON);
+            e.target.classList.add("hidden");
+            spinnerEl.classList.toggle("hidden");
+            google.script.run
+              .withSuccessHandler(handleSuccessButton)
+              .withUserObject(payload)
+              .findValueRange(coordinatesJSON);
           });
         });
 
@@ -149,9 +164,7 @@
         });
       }
     );
-    document
-      .querySelector(".loader-modal")
-      ?.classList.add("loader-modal-hidden");
+    document.querySelector(".loader-modal")?.classList.add("hidden");
   };
 
   google.script.run.withSuccessHandler(onSuccess).getMarkers();

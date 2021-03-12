@@ -133,7 +133,6 @@ const findValueRange = (value) => {
   const latString = String(latFixed).replace(".", ",");
   const lngString = String(lngFixed).replace(".", ",");
   const mergedCoordinates = `${latString}${lngString}`;
-  // ss.getRange("A29").setValue(mergedCoordinates);
   const foundRange = ss
     .getDataRange()
     .createTextFinder(mergedCoordinates)
@@ -142,5 +141,7 @@ const findValueRange = (value) => {
     const row = foundRange.getRow();
     const rangeToSelect = ss.getRange(`${row}:${row}`);
     ss.setActiveSelection(rangeToSelect);
+    return row;
   }
+  return null;
 };
