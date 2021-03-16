@@ -9,7 +9,7 @@ const onOpen = () => {
     .addSubMenu(
       ui
         .createMenu("Ustawienia")
-        .addItem("Wymiary okna mapy", "dupa")
+        .addItem("Wymiary okna mapy", "openMapDimensionsSettings")
         .addItem("Wartości dla kolorów znaczników", "dupa")
     )
     .addToUi();
@@ -24,10 +24,11 @@ const openShowbar = () => {
 };
 
 const openDialog = (modalMethod, title = null) => {
+  const { width, height } = getMapDimensions();
   const html = HtmlService.createTemplateFromFile("template/index.html")
     .evaluate()
-    .setHeight(700)
-    .setWidth(700)
+    .setHeight(height)
+    .setWidth(width)
     .setTitle("Mapa");
 
   const ui = SpreadsheetApp.getUi();
@@ -62,7 +63,7 @@ const getSheet = () => {
 };
 
 const getRangeValues = () => {
-  const ss = getSheet();
+  const ss = getSheetByID(CONSTANTS.SHEETS.DATA_ID);
   const [headers, ...values] = ss.getDataRange().getValues();
   return values;
 };
@@ -91,7 +92,7 @@ const getCoordinatesList = () => {
   );
 
   // do wydzielenia
-  getSheet().getRange(2, 8, values.length, 2).setValues(newData);
+  getSheetByID(CONSTANTS.SHEETS.DATA_ID).getRange(2, 8, values.length, 2).setValues(newData);
 };
 
 const getMarkers = () => {
@@ -127,7 +128,7 @@ const roundValue = (number, precision) => {
 
 const findValueRange = (value) => {
   const { lat, lng } = JSON.parse(value);
-  const ss = getSheet();
+  const ss = getSheetByID(CONSTANTS.SHEETS.DATA_ID);
   const latFixed = roundValue(lat, 6);
   const lngFixed = roundValue(lng, 6);
   const latString = String(latFixed).replace(".", ",");
@@ -145,3 +146,40 @@ const findValueRange = (value) => {
   }
   return null;
 };
+const getSheetByID = (id) => {
+  const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
+  const sheets = spreadsheet.getSheets();
+  const [properSheet] = sheets.filter(sheet => sheet.getSheetId() === id)
+  return properSheet;
+}
+
+const getRangeByName = (name) => {
+  return SpreadsheetApp.getActiveSpreadsheet().getRangeByName(name)
+}
+
+const getMapDimensions = () => {
+  const { MAP_DIMENSIONS: { MIN, MAX }, RANGE_NAMES: { MAP_VALUES } } = CONSTANTS;
+  const [dimensions] = getRangeByName(MAP_VALUES).getValues();
+  let [width, height] = dimensions;
+  width = width || MIN;
+  height = height || MIN;
+  return { width, height };
+}
+
+const setMapDimensions = (rangeValuesJSON) => {
+  const rangeValues = JSON.parse(rangeValuesJSON);
+  const range = getRangeByName(CONSTANTS.RANGE_NAMES.MAP_VALUES);
+  range.setValues(rangeValues);
+}
+
+const openMapDimensionsSettings = () => {
+  const template = HtmlService.createTemplateFromFile('template/mapWindow/mapWindow.html');
+  const { width, height } = getMapDimensions();
+  template.width = width;
+  template.height = height;
+  template.minDimVal = 300;
+  template.maxDimVal = 1000;
+  const html = template.evaluate();
+  SpreadsheetApp.getUi()
+    .showModalDialog(html, 'Podaj wymiary okna');
+}

@@ -8,32 +8,39 @@
   <?!= include('template/mapWindow/mapWindowStyle.html'); ?>
 </head>
 
-<body class="valign-wrapper full-height">
+<body class="full-height">
   <div class="container">
-    <form class="form form-modal row">
+    <form id="map-dimensions-form" class="form form-modal row">
       <div class="input-field col s10">
-        <input id="map-width" min="100" max="1000" type="number" value="100" class="validate">
+        <input id="map-width" min="<?= minDimVal ?>" max="<?= maxDimVal ?>" type="number" value="<?= width ?>"
+          class="validate" required tabindex="1">
         <label for="map-width">Szerokość (px)</label>
-        <span class="helper-text" data-error="Minimalna wartość wynosi 100, a maksymalna 1000 pikseli"></span>
+        <span class="helper-text"
+          data-error="Minimalna wartość wynosi <?= minDimVal ?>, a maksymalna <?= maxDimVal ?> pikseli"></span>
       </div>
       <div class="input-field col s10">
-        <input id="map-height" min="100" max="1000" type="number" value="100" class="validate">
+        <input id="map-height" min="<?= minDimVal ?>" max="<?= maxDimVal ?>" type="number" value="<?= height ?>"
+          class="validate" required tabindex="2">
         <label for="map-height">Wysokość (px)</label>
-        <span class="helper-text" data-error="Minimalna wartość wynosi 100, a maksymalna 1000 pikseli"></span>
+        <span class="helper-text"
+          data-error="Minimalna wartość wynosi <?= minDimVal ?>, a maksymalna <?= maxDimVal ?> pikseli"></span>
       </div>
-
       <div class="col s12">
-        <button class="btn waves-effect waves-green darken-1 transparent black-text z-depth-0 col s3"
-          onclick="google.script.host.close()">Anuluj</button>
-        <button class="btn waves-effect waves-light green darken-1 z-depth-0 col s3 offset-s4" type="submit"
-          name="action">
+        <button id="cancel-button"
+          class="btn waves-effect waves-green darken-1 transparent black-text z-depth-0 col s3" tabindex="4">Anuluj</button>
+        <button id="submit-button" class="btn waves-effect waves-light green darken-1 z-depth-0 col s3 offset-s4"
+          type="submit" name="action" tabindex="3">
           Zapisz
         </button>
       </div>
+      <div class="progress-wrapper row col s10 hide">
+        <div class="progress">
+          <div class="indeterminate"></div>
+        </div>
+      </div>
     </form>
   </div>
-
-
+  <?!= include('template/mapWindow/mapWindowScript.html'); ?>
 </body>
 
 </html>

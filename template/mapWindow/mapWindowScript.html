@@ -1,0 +1,33 @@
+<script>
+    const cancelBtnID = 'cancel-button';
+    const formID = 'map-dimensions-form';
+    const heightInputID = 'map-height';
+    const widthInputID = 'map-width';
+    const progressWrapperSelector = '.progress-wrapper';
+    const submitBtnID = 'submit-button';
+
+    const cancelBtnEl = document.getElementById(cancelBtnID);
+    const formEl = document.getElementById(formID);
+    const heightInputEl = document.getElementById(heightInputID);
+    const progressWrapperEl = document.querySelector(progressWrapperSelector);
+    const submitBtnEl = document.getElementById(submitBtnID);
+    const widthInputEl = document.getElementById(widthInputID);
+    const closeModal = () => {
+        google.script.host.close();
+    }
+    
+    const setModalDimensions = (e) => {
+        e.preventDefault();
+        submitBtnEl.classList.add('disabled');
+        progressWrapperEl.classList.remove('hide');
+        const width = widthInputEl.value;
+        const height = heightInputEl.value;
+        const rangeValues = JSON.stringify([[width, height]]);
+        google.script.run
+            .withSuccessHandler(closeModal)
+            .setMapDimensions(rangeValues);
+    }
+
+    cancelBtnEl.addEventListener('click', closeModal);
+    formEl.addEventListener('submit', setModalDimensions);
+</script>
