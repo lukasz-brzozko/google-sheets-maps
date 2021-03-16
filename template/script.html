@@ -73,6 +73,7 @@
   const handleSuccessButton = (row, { elementsToToggle, elementsToInsertData }) => {
     elementsToInsertData.forEach((element) => element.textContent = row);
     elementsToToggle.forEach((element) => element.classList.toggle("hidden"));
+    google.script.host.editor.focus();
   };
 
   const onSuccess = (markersJSON) => {
