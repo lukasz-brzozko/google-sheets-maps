@@ -10,7 +10,7 @@ const onOpen = () => {
       ui
         .createMenu("Ustawienia")
         .addItem("Wymiary okna mapy", "openMapDimensionsSettings")
-        .addItem("Wartości dla kolorów znaczników", "dupa")
+        .addItem("Wartości dla kolorów znaczników", "openMarkersSettings")
     )
     .addToUi();
 };
@@ -146,6 +146,7 @@ const findValueRange = (value) => {
   }
   return null;
 };
+
 const getSheetByID = (id) => {
   const spreadsheet = SpreadsheetApp.getActiveSpreadsheet();
   const sheets = spreadsheet.getSheets();
@@ -158,7 +159,7 @@ const getRangeByName = (name) => {
 }
 
 const getMapDimensions = () => {
-  const { MAP_DIMENSIONS: { MIN, MAX }, RANGE_NAMES: { MAP_VALUES } } = CONSTANTS;
+  const { MAP_DIMENSIONS: { MIN }, RANGE_NAMES: { MAP_VALUES } } = CONSTANTS;
   const [dimensions] = getRangeByName(MAP_VALUES).getValues();
   let [width, height] = dimensions;
   width = width || MIN;
@@ -182,4 +183,11 @@ const openMapDimensionsSettings = () => {
   const html = template.evaluate();
   SpreadsheetApp.getUi()
     .showModalDialog(html, 'Podaj wymiary okna');
+}
+
+const openMarkersSettings = () => {
+  const template = HtmlService.createTemplateFromFile('template/markersSettings/markersSettings.html');
+  const html = template.evaluate();
+  SpreadsheetApp.getUi()
+    .showModalDialog(html, 'Podaj wartości dla kolorów znaczników');
 }
