@@ -1,0 +1,28 @@
+<script>
+  const slider = document.getElementById('test-slider');
+  noUiSlider.create(slider, {
+    start: [20, 50, 80],
+    connect: [true, true, true, true],
+    step: 1,
+    range: {
+      'min': 0,
+      'max': 100
+    },
+    format: wNumb({
+      decimals: 0
+    }),
+    pips: {
+      mode: 'range',
+      density: 100,
+      format: wNumb({
+        decimals: 0,
+        postfix: "<br>dni"
+      }),
+    }
+  });
+
+  document.querySelectorAll('.noUi-handle').forEach(el =>
+    el?.classList.add('noUi-active')
+  )
+
+</script>
