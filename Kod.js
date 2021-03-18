@@ -167,9 +167,21 @@ const getMapDimensions = () => {
   return { width, height };
 }
 
+const getMarkersValues = () => {
+  const { MAP_DIMENSIONS: { MIN }, RANGE_NAMES: { MARKERS_COLORS } } = CONSTANTS;
+  const [values] = getRangeByName(MARKERS_COLORS).getValues();
+  return values;
+}
+
 const setMapDimensions = (rangeValuesJSON) => {
   const rangeValues = JSON.parse(rangeValuesJSON);
   const range = getRangeByName(CONSTANTS.RANGE_NAMES.MAP_VALUES);
+  range.setValues(rangeValues);
+}
+
+const setMarkersValues = (markersValuesJSON) => {
+  const rangeValues = JSON.parse(markersValuesJSON);
+  const range = getRangeByName(CONSTANTS.RANGE_NAMES.MARKERS_COLORS);
   range.setValues(rangeValues);
 }
 
@@ -187,7 +199,10 @@ const openMapDimensionsSettings = () => {
 
 const openMarkersSettings = () => {
   const template = HtmlService.createTemplateFromFile('template/markersSettings/markersSettings.html');
+  const initialValues = getMarkersValues();
+  template.initialValues = JSON.stringify(initialValues);
   const html = template.evaluate();
+  html.setWidth(700).setHeight(500)
   SpreadsheetApp.getUi()
-    .showModalDialog(html, 'Podaj wartości dla kolorów znaczników');
+    .showModalDialog(html, 'Podaj wartości dla kolorów znaczników mapy');
 }

@@ -1,33 +1,64 @@
 <script>
-  const slider = document.getElementById('test-slider');
-  noUiSlider.create(slider, {
-    start: [20, 50, 80],
-    connect: [true, true, true, true],
-    margin: 1,
-    step: 1,
-    range: {
-      'min': 0,
-      'max': 100
-    },
-    format: wNumb({
-      decimals: 0
-    }),
-    pips: {
-      mode: 'range',
-      density: 100,
-      format: wNumb({
-        decimals: 0,
-        postfix: "<br>dni"
-      }),
-    }
-  });
-
+  const cancelBtnID = 'cancel-button';
+  const formID = 'markers-settings-form';
   const idAttribute = "id";
+  const inputDaySelector = ".input-day";
   const lowValueInputId = "green-value";
   const mediumValueInputId = "yellow-value";
-  const uiSliderMarkersSelector = ".noUi-handle";
+  const progressWrapperSelector = '.progress-wrapper';
+  const sliderId = "marker-slider";
   const uiSliderActiveClassName = "noUi-active";
-  const inputDaySelector = ".input-day";
+  const uiSliderMarkersSelector = ".noUi-handle";
+  const submitBtnID = 'submit-button';
+
+  const cancelBtnEl = document.getElementById(cancelBtnID);
+  const formEl = document.getElementById(formID);
+  const inputs = [...document.querySelectorAll(inputDaySelector)];
+  const progressWrapperEl = document.querySelector(progressWrapperSelector);
+  const sliderEl = document.getElementById(sliderId);
+  const submitBtnEl = document.getElementById(submitBtnID);
+
+  const createSlider = (sliderEl, initialValues = [30, 60, 90]) => {
+    noUiSlider.create(sliderEl, {
+      start: initialValues,
+      connect: [true, true, true, true],
+      margin: 1,
+      step: 1,
+      range: {
+        'min': 0,
+        'max': 100
+      },
+      format: wNumb({
+        decimals: 0
+      }),
+      pips: {
+        mode: 'range',
+        density: 100,
+        format: wNumb({
+          decimals: 0,
+          postfix: "<br>dni"
+        }),
+      }
+    });
+  }
+
+  const convertTypesToNumInArr = (array) => (array.map(element => parseInt(element, 10)));
+
+  const closeModal = () => {
+    google.script.host.close();
+  }
+
+  const setMarkersColorsValues = (e) => {
+    e.preventDefault();
+    submitBtnEl.classList.add('disabled');
+    progressWrapperEl.classList.remove('hide');
+    const values = sliderEl.noUiSlider.get();
+    const valuesNum = convertTypesToNumInArr(values);
+    const rangeValues = JSON.stringify([valuesNum]);
+    google.script.run
+      .withSuccessHandler(closeModal)
+      .setMarkersValues(rangeValues);
+  }
 
   const handleInputChange = (e) => {
     const values = inputs.map(input => parseInt(input.value, 10))
@@ -37,7 +68,7 @@
     else {
       values.shift();
     }
-    slider.noUiSlider.set(values)
+    sliderEl.noUiSlider.set(values)
   }
 
   const handleInputEvent = (e) => {
@@ -72,14 +103,17 @@
     })
   }
 
+  const initialValuesJSON = sliderEl.dataset.values;
+  const initialValues = JSON.parse(initialValuesJSON);
+  createSlider(sliderEl, initialValues);
   document.querySelectorAll(uiSliderMarkersSelector).forEach(el =>
     el?.classList.add(uiSliderActiveClassName)
   )
-  const inputs = [...document.querySelectorAll('.input-day')];
   inputs.forEach(input => {
     input.addEventListener('change', handleInputChange)
     input.addEventListener('input', handleInputEvent)
   })
-
-  slider.noUiSlider.on('update', handleSliderUpdate);
+  cancelBtnEl.addEventListener('click', closeModal);
+  formEl.addEventListener('submit', setMarkersColorsValues);
+  sliderEl.noUiSlider.on('update', handleSliderUpdate);
 </script>
