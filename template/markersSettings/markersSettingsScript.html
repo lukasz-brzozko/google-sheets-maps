@@ -3,6 +3,7 @@
   noUiSlider.create(slider, {
     start: [20, 50, 80],
     connect: [true, true, true, true],
+    margin: 1,
     step: 1,
     range: {
       'min': 0,
@@ -24,5 +25,36 @@
   document.querySelectorAll('.noUi-handle').forEach(el =>
     el?.classList.add('noUi-active')
   )
+  const inputs = [...document.querySelectorAll('.input-day')];
+  inputs.forEach(input => {
+    input.addEventListener('input', (e) => {
+      const values = inputs.map(input => parseInt(input.value, 10))
+      if (e.target.getAttribute('id') === "green-value") {
+        values.splice(1, 1);
+      }
+      else {
+        values.shift();
+      }
+      slider.noUiSlider.set(values)
+    })
+  })
 
+  slider.noUiSlider.on('update', (values, handle) => {
+    const valuesNum = values.map(val => parseInt(val, 10));
+    inputs.forEach((input, index) => {
+      if ([0, 1].includes(index)) {
+        input.value = valuesNum[0];
+        input.max = valuesNum[1] - 1;
+        return;
+      }
+      else if (index === inputs.length - 1) {
+        input.value = valuesNum[index - 1];
+        input.min = valuesNum[index - 2] + 1;
+        return
+      }
+      input.value = valuesNum[index - 1];
+      input.min = valuesNum[index - 2] + 1;
+      input.max = valuesNum[index] - 1;
+    })
+  });
 </script>
