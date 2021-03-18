@@ -1,5 +1,9 @@
 <script>
-  const map = new L.map("mapid", {
+  const mapEl = document.getElementById('mapid');
+  const markersColorsValuesJSON = mapEl.dataset.markersValues;
+  const [lowVal, mediumVal, highVal] = JSON.parse(markersColorsValuesJSON);
+
+  const map = new L.map(mapEl, {
     fullscreenControl: true,
   }).setView([COORDINATES.HOME.LATITUDE, COORDINATES.HOME.LONGITUDE], 12);
   const OpenStreetMap_Mapnik = L.tileLayer(
@@ -92,11 +96,11 @@
         lng,
       }) => {
         let icon = null;
-        if (lastSaleDayCount > 90) {
+        if (lastSaleDayCount > highVal) {
           icon = iconHot;
-        } else if (lastSaleDayCount > 60) {
+        } else if (lastSaleDayCount > mediumVal) {
           icon = iconWarning;
-        } else if (lastSaleDayCount > 30) {
+        } else if (lastSaleDayCount > lowVal) {
           icon = iconWarningLight;
         } else if (lastSaleDayCount === "") {
           icon = iconNoData;

@@ -25,8 +25,11 @@ const openShowbar = () => {
 
 const openDialog = (modalMethod, title = null) => {
   const { width, height } = getMapDimensions();
-  const html = HtmlService.createTemplateFromFile("template/index.html")
-    .evaluate()
+  const template = HtmlService.createTemplateFromFile("template/index.html")
+  const markersValues = getMarkersValues();
+  template.markersValues = JSON.stringify(markersValues);
+  const html = template.evaluate();
+  html
     .setHeight(height)
     .setWidth(width)
     .setTitle("Mapa");
