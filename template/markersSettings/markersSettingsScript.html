@@ -22,24 +22,38 @@
     }
   });
 
-  document.querySelectorAll('.noUi-handle').forEach(el =>
-    el?.classList.add('noUi-active')
-  )
-  const inputs = [...document.querySelectorAll('.input-day')];
-  inputs.forEach(input => {
-    input.addEventListener('input', (e) => {
-      const values = inputs.map(input => parseInt(input.value, 10))
-      if (e.target.getAttribute('id') === "green-value") {
-        values.splice(1, 1);
-      }
-      else {
-        values.shift();
-      }
-      slider.noUiSlider.set(values)
-    })
-  })
+  const idAttribute = "id";
+  const lowValueInputId = "green-value";
+  const mediumValueInputId = "yellow-value";
+  const uiSliderMarkersSelector = ".noUi-handle";
+  const uiSliderActiveClassName = "noUi-active";
+  const inputDaySelector = ".input-day";
 
-  slider.noUiSlider.on('update', (values, handle) => {
+  const handleInputChange = (e) => {
+    const values = inputs.map(input => parseInt(input.value, 10))
+    if (e.target.getAttribute(idAttribute) === lowValueInputId) {
+      values.splice(1, 1);
+    }
+    else {
+      values.shift();
+    }
+    slider.noUiSlider.set(values)
+  }
+
+  const handleInputEvent = (e) => {
+    const values = inputs.map(input => parseInt(input.value, 10));
+    const id = e.target.getAttribute(idAttribute);
+    if (id === lowValueInputId) {
+      const input = inputs.find(input => input.getAttribute(idAttribute) === mediumValueInputId)
+      input.value = e.target.value
+    }
+    else if (id === mediumValueInputId) {
+      const input = inputs.find(input => input.getAttribute(idAttribute) === lowValueInputId)
+      input.value = e.target.value
+    }
+  }
+
+  const handleSliderUpdate = (values, handle) => {
     const valuesNum = values.map(val => parseInt(val, 10));
     inputs.forEach((input, index) => {
       if ([0, 1].includes(index)) {
@@ -56,5 +70,16 @@
       input.min = valuesNum[index - 2] + 1;
       input.max = valuesNum[index] - 1;
     })
-  });
+  }
+
+  document.querySelectorAll(uiSliderMarkersSelector).forEach(el =>
+    el?.classList.add(uiSliderActiveClassName)
+  )
+  const inputs = [...document.querySelectorAll('.input-day')];
+  inputs.forEach(input => {
+    input.addEventListener('change', handleInputChange)
+    input.addEventListener('input', handleInputEvent)
+  })
+
+  slider.noUiSlider.on('update', handleSliderUpdate);
 </script>

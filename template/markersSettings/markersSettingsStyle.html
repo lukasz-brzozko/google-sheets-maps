@@ -1,24 +1,45 @@
 <style>
+    :root {
+        --color-low: #009624;
+        --color-medium: #fdd835;
+        --color-warining: #f57c00;
+        --color-high: #c62828;
+    }
+
     body {
         display: flex;
         flex-direction: column;
         justify-content: center;
     }
 
+    .button-wrapper {
+        margin-top: 60px;
+    }
+
+    .content-wrapper {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 0;
+    }
+
+    .content-wrapper>* {
+        margin-left: 5px !important;
+    }
+
     .noUi-connect:nth-of-type(1) {
-        background-color: #009624;
+        background-color: var(--color-low);
     }
 
     .noUi-connect:nth-of-type(3) {
-        background-color: #fdd835;
+        background-color: var(--color-medium);
     }
 
     .noUi-connect:nth-of-type(5) {
-        background-color: #f57c00;
+        background-color: var(--color-warining);
     }
 
     .noUi-connect:nth-of-type(7) {
-        background-color: #c62828;
+        background-color: var(--color-high);
     }
 
     .noUi-target .noUi-handle.noUi-active {
@@ -29,5 +50,21 @@
     .noUi-horizontal {
         height: 6px;
         margin: 80px 0 60px;
+    }
+
+    .value-color-low {
+        color: var(--color-low);
+    }
+
+    .value-color-medium {
+        color: var(--color-medium);
+    }
+
+    .value-color-warning {
+        color: var(--color-warining);
+    }
+
+    .value-color-high {
+        color: var(--color-high);
     }
 </style>
