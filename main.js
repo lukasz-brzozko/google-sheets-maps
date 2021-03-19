@@ -94,24 +94,16 @@ const getCoordinatesList = () => {
     }
   );
 
-  // do wydzielenia
-  getSheetByID(CONSTANTS.SHEETS.DATA_ID).getRange(2, 8, values.length, 2).setValues(newData);
+  const { COLUMN, ROW } = CONSTANTS.RANGE_ADDRESSES.COORDINATES;
+  const sheet = getSheetByID(CONSTANTS.SHEETS.DATA_ID);
+  const coordinatesRange = sheet.getRange(ROW, COLUMN, values.length, 2);
+  coordinatesRange.setValues(newData);
 };
 
 const getMarkers = () => {
   const values = getRangeValues();
   const markers = values.map((row) => {
-    const objKeys = [
-      "client",
-      "city",
-      "address",
-      "telephone",
-      "sale",
-      "lastSale",
-      "lastSaleDayCount",
-      "lat",
-      "lng",
-    ];
+    const objKeys = [...CONSTANTS.DATA_HEADERS];
     const res = row.reduce(
       (acc, curr, index) => ((acc[objKeys[index]] = curr), acc),
       {}
