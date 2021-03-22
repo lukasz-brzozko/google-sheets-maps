@@ -2,10 +2,19 @@
   const mapEl = document.getElementById('mapid');
   const markersColorsValuesJSON = mapEl.dataset.markersValues;
   const [lowVal, mediumVal, highVal] = JSON.parse(markersColorsValuesJSON);
+  const defaultCoordinates = {
+    lat: 52.215933,
+    lng: 19.134422
+  };
+  const { LATITUDE: HOME_LAT, LONGITUDE: HOME_LNG } = COORDINATES.HOME;
+  const viewCoordinates = {
+    lat: HOME_LAT ?? defaultCoordinates.lat,
+    lng: HOME_LNG ?? defaultCoordinates.lng
+  }
 
   const map = new L.map(mapEl, {
     fullscreenControl: true,
-  }).setView([COORDINATES.HOME.LATITUDE, COORDINATES.HOME.LONGITUDE], 12);
+  }).setView(viewCoordinates, 12);
   const OpenStreetMap_Mapnik = L.tileLayer(
     "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
     {
@@ -36,11 +45,9 @@
     iconsObj[iconName] = newIcon;
   });
 
-  const { LATITUDE: HOME_LAT, LONGITUDE: HOME_LNG } = COORDINATES.HOME;
-
-  if (HOME_LAT !== undefined && HOME_LAT !== undefined) {
+  if (HOME_LAT !== undefined && HOME_LNG !== undefined) {
     const marker = L.marker(
-      [HOME_LAT, HOME_LNG],
+      viewCoordinates,
       { icon: iconsObj.iconHome }
     ).addTo(map);
     marker.bindTooltip("Dom", { direction: "top" });
