@@ -16,50 +16,78 @@
   );
   map.addLayer(OpenStreetMap_Mapnik);
 
+  const createIcon = (iconSVG, className) => {
+    const icon = L.divIcon({
+      className,
+      html: iconSVG,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -20],
+      tooltipAnchor: [0, -20],
+    });
+
+    return icon;
+  }
+
   const homeIMG =
     '<svg xmlns="http://www.w3.org/2000/svg" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 20 19"><path d="M8,17 L8,11 L12,11 L12,17 L17,17 L17,9 L20,9 L10,0 L0,9 L3,9 L3,17 L8,17 Z" id="Shape"/></svg>';
   const markerIMG =
     '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20" ><path clip-rule="evenodd" d="M5.05025 4.05025C7.78392 1.31658 12.2161 1.31658 14.9497 4.05025C17.6834 6.78392 17.6834 11.2161 14.9497 13.9497L10 18.8995L5.05025 13.9497C2.31658 11.2161 2.31658 6.78392 5.05025 4.05025ZM10 11C11.1046 11 12 10.1046 12 9C12 7.89543 11.1046 7 10 7C8.89543 7 8 7.89543 8 9C8 10.1046 8.89543 11 10 11Z" fill="#4A5568" fill-rule="evenodd"/></svg>';
-  const iconHot = L.divIcon({
-    html: `${markerIMG}`,
-    className: "icon-custom icon-hot",
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -20],
-    tooltipAnchor: [0, -20],
+
+  const iconTemplates = [
+    {
+      iconName: "iconHot",
+      className: "icon-custom icon-hot",
+      svg: markerIMG,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -20],
+      tooltipAnchor: [0, -20],
+    },
+    {
+      iconName: "iconWarning",
+      className: "icon-custom icon-warning",
+      svg: markerIMG,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -20],
+      tooltipAnchor: [0, -20],
+    },
+    {
+      iconName: "iconWarningLight",
+      className: "icon-custom icon-warning-light",
+      svg: markerIMG,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -20],
+      tooltipAnchor: [0, -20],
+    },
+    {
+      iconName: "iconDefault",
+      className: "icon-custom icon-default",
+      svg: markerIMG,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -20],
+      tooltipAnchor: [0, -20],
+    },
+    {
+      iconName: "iconNoData",
+      className: "icon-custom icon-no-data",
+      svg: markerIMG,
+      iconSize: [40, 40],
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -20],
+      tooltipAnchor: [0, -20],
+    },
+  ]
+
+  const iconsObj = {};
+  iconTemplates.forEach(({ className, iconName, svg }) => {
+    const newIcon = createIcon(svg, className);
+    iconsObj[iconName] = newIcon;
   });
-  const iconWarning = L.divIcon({
-    html: `${markerIMG}`,
-    className: "icon-custom icon-warning",
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -20],
-    tooltipAnchor: [0, -20],
-  });
-  const iconWarningLight = L.divIcon({
-    html: `${markerIMG}`,
-    className: "icon-custom icon-warning-light",
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -20],
-    tooltipAnchor: [0, -20],
-  });
-  const iconDefault = L.divIcon({
-    html: `${markerIMG}`,
-    className: "icon-custom icon-default",
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -20],
-    tooltipAnchor: [0, -20],
-  });
-  const iconNoData = L.divIcon({
-    html: `${markerIMG}`,
-    className: "icon-custom icon-no-data",
-    iconSize: [40, 40],
-    iconAnchor: [20, 40],
-    popupAnchor: [0, -20],
-    tooltipAnchor: [0, -20],
-  });
+
   const iconHome = L.divIcon({
     html: `${homeIMG}`,
     className: "icon-custom icon-home",
@@ -68,11 +96,14 @@
     popupAnchor: [0, -10],
     tooltipAnchor: [0, -10],
   });
-  const marker = L.marker(
-    [COORDINATES.HOME.LATITUDE, COORDINATES.HOME.LONGITUDE],
-    { icon: iconHome }
-  ).addTo(map);
-  marker.bindTooltip("Dom", { direction: "top" });
+
+  if (COORDINATES.HOME.LATITUDE && COORDINATES.HOME.LONGITUDE) {
+    const marker = L.marker(
+      [COORDINATES.HOME.LATITUDE, COORDINATES.HOME.LONGITUDE],
+      { icon: iconHome }
+    ).addTo(map);
+    marker.bindTooltip("Dom", { direction: "top" });
+  }
 
   const handleSuccessButton = (row, { elementsToToggle, elementsToInsertData }) => {
     elementsToInsertData.forEach((element) => element.textContent = row);
@@ -83,6 +114,7 @@
   const onSuccess = (markersJSON) => {
     const markersParsed = JSON.parse(markersJSON);
     const markers = markersParsed.filter(({ lat, lng }) => lat && lng);
+    const { iconDefault, iconHot, iconNoData, iconWarning, iconWarningLight } = iconsObj;
     markers.forEach(
       ({
         client,
