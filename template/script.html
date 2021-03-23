@@ -54,7 +54,13 @@
   }
 
   const handleSuccessButton = (row, { elementsToToggle, elementsToInsertData }) => {
-    elementsToInsertData.forEach((element) => element.textContent = row);
+    const successMsg = `Rekord znajduje się w wierszu nr: <strong class="info info-record-number">${row}</strong></span>`
+    const noFoundMsg = "Niestety nie udało się znaleźć szukanego rekordu";
+    const methodToUse = row === null ? "add" : "remove";
+    elementsToInsertData.forEach(element => {
+      element.innerHTML = row === null ? noFoundMsg : successMsg;
+      element.classList[methodToUse]('error');
+    });
     elementsToToggle.forEach((element) => element.classList.toggle("hidden"));
     google.script.host.editor.focus();
   };
@@ -88,6 +94,31 @@
           icon = iconDefault;
         }
 
+        const handlePopuOpen = function (e) {
+          marker.unbindTooltip();
+          const popup = this._popup;
+          const wrapperEl = popup._wrapper;
+          const buttonEl = wrapperEl.querySelector(".button.button-popup");
+          const spinnerEl = wrapperEl.querySelector(".spinner-popup");
+          const resultEl = wrapperEl.querySelector(".info-result");
+          // const recordNumberEl = wrapperEl.querySelector(".info-record-number");
+          buttonEl?.addEventListener("click", (e) => {
+            const coordinates = popup._latlng;
+            const coordinatesJSON = JSON.stringify(coordinates);
+            const payload = {
+              elementsToToggle: [spinnerEl, resultEl],
+              elementsToInsertData: [resultEl],
+            };
+            e.target.classList.add("hidden");
+            spinnerEl.classList.toggle("hidden");
+            google.script.run
+              .withSuccessHandler(handleSuccessButton)
+              .withUserObject(payload)
+              .findValueRange(coordinatesJSON);
+          });
+        }
+
+
         const dateLabel = lastSale ? `(${lastSaleDayCount} dni temu)` : "";
         const noDataMessage = "<span class='error'>brak danych</span>";
         const date = lastSale
@@ -108,8 +139,7 @@
           <div class="container container-button">
             <button class="button button-popup">Znajdź rekord</button>
             <div class="spinner spinner-popup hidden"></div>
-            <span class="info info-result hidden">Rekord znajduje się w wierszu nr:</span>
-            <strong class="info info-record-number">
+            <span class="info info-result hidden"></span>
           </div>`;
 
         const marker = L.marker([lat, lng], { icon }).addTo(map);
@@ -120,29 +150,7 @@
           .bindPopup(popup)
           .bindPopup(popup);
 
-        marker.addEventListener("popupopen", function (e) {
-          marker.unbindTooltip();
-          const popup = this._popup;
-          const wrapperEl = popup._wrapper;
-          const buttonEl = wrapperEl.querySelector(".button.button-popup");
-          const spinnerEl = wrapperEl.querySelector(".spinner-popup");
-          const resultEl = wrapperEl.querySelector(".info-result");
-          const recordNumberEl = wrapperEl.querySelector(".info-record-number");
-          buttonEl?.addEventListener("click", (e) => {
-            const coordinates = popup._latlng;
-            const coordinatesJSON = JSON.stringify(coordinates);
-            const payload = {
-              elementsToToggle: [spinnerEl, resultEl],
-              elementsToInsertData: [recordNumberEl],
-            };
-            e.target.classList.add("hidden");
-            spinnerEl.classList.toggle("hidden");
-            google.script.run
-              .withSuccessHandler(handleSuccessButton)
-              .withUserObject(payload)
-              .findValueRange(coordinatesJSON);
-          });
-        });
+        marker.addEventListener("popupopen", handlePopuOpen);
 
         marker.addEventListener("popupclose", (e) => {
           marker.bindTooltip(popupTitle, { direction: "top" });
